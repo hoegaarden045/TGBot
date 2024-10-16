@@ -295,8 +295,8 @@ def get_repl_logs(update: Update, context):
         ssh_client.connect(
             hostname=DB_HOST,
             port=DB_PORT_SSH,
-            username=DB_USER_SSH,
-            password=DB_PASSWORD_SSH,
+            username=DB_USER,
+            password=DB_PASSWORD,
         )
 
         log_command = "tail -n 20 /var/log/postgresql/postgresql.log"

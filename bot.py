@@ -44,8 +44,8 @@ def helpCommand(update: Update, context):
     help_text = """ 
     /start - Запуск бота
     /help - Получить информацию о доступных командах
-    /find_phone_number - Поиск телефонных номеров в тексте 
-    /find_email - Поиск email-адресов в тексте
+    /findPhoneNumber - Поиск телефонных номеров в тексте 
+    /findEmail - Поиск email-адресов в тексте
     /verify_password - Проверка сложности пароля
     /get_release - Получить информацию о релизе системы
     /get_uname - Получить информацию об архитектуру процессора, имени хоста системы и версии ядра

@@ -284,22 +284,34 @@ def get_services(update: Update, context):
     update.message.reply_text(output)
 
 def get_repl_logs(update: Update, context):
-    try:
-        result = subprocess.run(
-            ["bash", "-c", "tail -n 15 /var/log/postgresql/postgresql.log | grep 'repl'"],
-            capture_output=True,
-            text=True
-        )
-        logs = result.stdout
+    if DB_HOST == "" or DB_USER == "" or DB_PASSWORD == "":
+        update.message.reply_text("Неверно заданы параметры подключения по SSH")
+        return
 
-        if not logs:
-            logs = "Логи не найдены или пусты."
-        
-        update.message.reply_text(logs)
-    
-    except Exception as e:
-        logger.error(f"Ошибка при получении логов: {e}")
-        update.message.reply_text("Произошла ошибка при получении логов.")
+    ssh_client = paramiko.SSHClient()
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    try:
+        ssh_client.connect(
+            hostname=DB_HOST,
+            port=DB_PORT_SSH,
+            username=DB_USER_SSH,
+            password=DB_PASSWORD_SSH,
+        )
+
+        log_command = "tail -n 20 /var/log/postgresql/postgresql.log"
+        stdin, stdout, stderr = ssh_client.exec_command(log_command)
+
+        log_information = stdout.read().decode("utf-8")
+        if log_information:
+            update.message.reply_text(log_information)
+        else:
+            update.message.reply_text("log-файл пуст или не найден.")
+
+    except Exception as error:
+        update.message.reply_text(f"Ошибка подключения: {str(error)}")
+    finally:
+        ssh_client.close()
 
 def get_emails(update: Update, context):
     connection = None
